@@ -23,6 +23,7 @@ class Controller {
         }
 
         this.initPlayButton();
+        this.initReloadButton();
         this.initThumbnails();
         this.initPlayedBar();
         this.initFullButton();
@@ -40,22 +41,29 @@ class Controller {
             this.player.toggle();
         });
 
-        if (!utils.isMobile) {
-            this.player.template.videoWrap.addEventListener('click', () => {
-                this.player.toggle();
-            });
-            this.player.template.controllerMask.addEventListener('click', () => {
-                this.player.toggle();
-            });
-        }
-        else {
-            this.player.template.videoWrap.addEventListener('click', () => {
-                this.toggle();
-            });
-            this.player.template.controllerMask.addEventListener('click', () => {
-                this.toggle();
-            });
-        }
+        // if (!utils.isMobile) {
+        //     this.player.template.videoWrap.addEventListener('click', () => {
+        //         this.player.toggle();
+        //     });
+        //     this.player.template.controllerMask.addEventListener('click', () => {
+        //         this.player.toggle();
+        //     });
+        // }
+        // else {
+        //     this.player.template.videoWrap.addEventListener('click', () => {
+        //         this.toggle();
+        //     });
+        //     this.player.template.controllerMask.addEventListener('click', () => {
+        //         this.toggle();
+        //     });
+        // }
+    }
+
+     initReloadButton () {
+        this.player.template.reloadButton.addEventListener('click', () => {
+            this.player.switchVideo(this.player.options.video);
+            this.player.toggle();
+        });
     }
 
     initHighlights () {
@@ -170,6 +178,13 @@ class Controller {
 
         this.player.template.webFullButton.addEventListener('click', () => {
             this.player.fullScreen.toggle('web');
+        });
+
+        this.player.template.videoWrap.addEventListener('dblclick', () => {
+            this.player.fullScreen.toggle('browser');
+        });
+        this.player.template.controllerMask.addEventListener('dblclick', () => {
+            this.player.fullScreen.toggle('browser');
         });
     }
 

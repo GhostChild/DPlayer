@@ -1,3 +1,16 @@
+**# Dplayer-Dcam edition**
+
+**1. 移除单击播放器主体播放/暂停**
+
+**2. 添加双击全屏**
+
+**3. 添加reload**
+
+**# 修改用于做监控客户端的播放器**
+
+![img](https://i.loli.net/2019/07/09/5d23d7b53edc051331.png)
+
+
 <p align="center">
 <img src="https://i.imgur.com/LnPvZvO.png" alt="ADPlayer" width="100">
 </p>
