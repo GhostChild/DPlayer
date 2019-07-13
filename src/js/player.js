@@ -365,7 +365,8 @@ class DPlayer {
                     if (flvjs.isSupported()) {
                         const flvPlayer = flvjs.createPlayer({
                             type: 'flv',
-                            url: video.src
+                            url: video.src,
+                            isLive: true,
                         });
                         flvPlayer.attachMediaElement(video);
                         flvPlayer.load();
