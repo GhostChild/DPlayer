@@ -27,11 +27,11 @@ const instances = [];
 class DPlayer {
 
     /**
-     * DPlayer constructor function
-     *
-     * @param {Object} options - See README
-     * @constructor
-     */
+	 * DPlayer constructor function
+	 *
+	 * @param {Object} options - See README
+	 * @constructor
+	 */
     constructor (options) {
         this.options = handleOption(options);
 
@@ -143,8 +143,8 @@ class DPlayer {
     }
 
     /**
-    * Seek video
-    */
+	 * Seek video
+	 */
     seek (time) {
         time = Math.max(time, 0);
         if (this.video.duration) {
@@ -152,8 +152,7 @@ class DPlayer {
         }
         if (this.video.currentTime < time) {
             this.notice(`${this.tran('FF')} ${(time - this.video.currentTime).toFixed(0)} ${this.tran('s')}`);
-        }
-        else if (this.video.currentTime > time) {
+        } else if (this.video.currentTime > time) {
             this.notice(`${this.tran('REW')} ${(this.video.currentTime - time).toFixed(0)} ${this.tran('s')}`);
         }
 
@@ -168,8 +167,8 @@ class DPlayer {
     }
 
     /**
-     * Play video
-     */
+	 * Play video
+	 */
     play () {
         this.paused = false;
         if (this.video.paused) {
@@ -199,8 +198,8 @@ class DPlayer {
     }
 
     /**
-     * Pause video
-     */
+	 * Pause video
+	 */
     pause () {
         this.paused = true;
         this.container.classList.remove('dplayer-loading');
@@ -222,18 +221,16 @@ class DPlayer {
     switchVolumeIcon () {
         if (this.volume() >= 0.95) {
             this.template.volumeIcon.innerHTML = Icons.volumeUp;
-        }
-        else if (this.volume() > 0) {
+        } else if (this.volume() > 0) {
             this.template.volumeIcon.innerHTML = Icons.volumeDown;
-        }
-        else {
+        } else {
             this.template.volumeIcon.innerHTML = Icons.volumeOff;
         }
     }
 
     /**
-     * Set volume
-     */
+	 * Set volume
+	 */
     volume (percentage, nostorage, nonotice) {
         percentage = parseFloat(percentage);
         if (!isNaN(percentage)) {
@@ -260,30 +257,29 @@ class DPlayer {
     }
 
     /**
-     * Toggle between play and pause
-     */
+	 * Toggle between play and pause
+	 */
     toggle () {
         if (this.video.paused) {
             this.play();
-        }
-        else {
+        } else {
             this.pause();
         }
     }
 
     /**
-     * attach event
-     */
+	 * attach event
+	 */
     on (name, callback) {
         this.events.on(name, callback);
     }
 
     /**
-     * Switch to a new video
-     *
-     * @param {Object} video - new video info
-     * @param {Object} danmaku - new danmaku info
-     */
+	 * Switch to a new video
+	 *
+	 * @param {Object} video - new video info
+	 * @param {Object} danmaku - new danmaku info
+	 */
     switchVideo (video, danmakuAPI) {
         this.pause();
         this.video.poster = video.pic ? video.pic : '';
@@ -313,23 +309,18 @@ class DPlayer {
         if (this.options.video.customType && this.options.video.customType[type]) {
             if (Object.prototype.toString.call(this.options.video.customType[type]) === '[object Function]') {
                 this.options.video.customType[type](this.video, this);
-            }
-            else {
+            } else {
                 console.error(`Illegal customType: ${type}`);
             }
-        }
-        else {
+        } else {
             if (this.type === 'auto') {
                 if (/m3u8(#|\?|$)/i.exec(video.src)) {
                     this.type = 'hls';
-                }
-                else if (/.flv(#|\?|$)/i.exec(video.src)) {
+                } else if (/.flv(#|\?|$)/i.exec(video.src)) {
                     this.type = 'flv';
-                }
-                else if (/.mpd(#|\?|$)/i.exec(video.src)) {
+                } else if (/.mpd(#|\?|$)/i.exec(video.src)) {
                     this.type = 'dash';
-                }
-                else {
+                } else {
                     this.type = 'normal';
                 }
             }
@@ -349,56 +340,56 @@ class DPlayer {
                         this.events.on('destroy', () => {
                             hls.destroy();
                         });
-                    }
-                    else {
+                    } else {
                         this.notice('Error: Hls is not supported.');
                     }
-                }
-                else {
+                } else {
                     this.notice('Error: Can\'t find Hls.');
                 }
                 break;
 
-            // https://github.com/Bilibili/flv.js
+                // https://github.com/Bilibili/flv.js
             case 'flv':
                 if (flvjs) {
                     if (flvjs.isSupported()) {
-                        const flvPlayer = flvjs.createPlayer({
+                        if (this.flvPlayer) {
+                            this.flvPlayer.unload();
+                            this.flvPlayer.detachMediaElement();
+                            this.flvPlayer.destroy();
+                        }
+                        this.flvPlayer = flvjs.createPlayer({
                             type: 'flv',
                             url: video.src,
-                            isLive: true,
+                            isLive: this.options.live,
                         });
-                        flvPlayer.attachMediaElement(video);
-                        flvPlayer.load();
+                        this.flvPlayer.attachMediaElement(video);
+                        this.flvPlayer.load();
                         this.events.on('destroy', () => {
-                            flvPlayer.unload();
-                            flvPlayer.detachMediaElement();
-                            flvPlayer.destroy();
+                            this.flvPlayer.unload();
+                            this.flvPlayer.detachMediaElement();
+                            this.flvPlayer.destroy();
                         });
-                    }
-                    else {
+                    } else {
                         this.notice('Error: flvjs is not supported.');
                     }
-                }
-                else {
+                } else {
                     this.notice('Error: Can\'t find flvjs.');
                 }
                 break;
 
-            // https://github.com/Dash-Industry-Forum/dash.js
+                // https://github.com/Dash-Industry-Forum/dash.js
             case 'dash':
                 if (dashjs) {
                     dashjs.MediaPlayer().create().initialize(video, video.src, false);
                     this.events.on('destroy', () => {
                         dashjs.MediaPlayer().reset();
                     });
-                }
-                else {
+                } else {
                     this.notice('Error: Can\'t find dashjs.');
                 }
                 break;
 
-            // https://github.com/webtorrent/webtorrent
+                // https://github.com/webtorrent/webtorrent
             case 'webtorrent':
                 if (WebTorrent) {
                     if (WebTorrent.WEBRTC_SUPPORT) {
@@ -417,12 +408,10 @@ class DPlayer {
                             client.remove(torrentId);
                             client.destroy();
                         });
-                    }
-                    else {
+                    } else {
                         this.notice('Error: Webtorrent is not supported.');
                     }
-                }
-                else {
+                } else {
                     this.notice('Error: Can\'t find Webtorrent.');
                 }
                 break;
@@ -434,8 +423,8 @@ class DPlayer {
         this.initMSE(video, type);
 
         /**
-         * video events
-         */
+		 * video events
+		 */
         // show video time: the metadata has loaded or changed
         this.on('durationchange', () => {
             // compatibility: Android browsers will output 1 or Infinity at first
@@ -464,8 +453,7 @@ class DPlayer {
             this.bar.set('played', 1, 'width');
             if (!this.setting.loop) {
                 this.pause();
-            }
-            else {
+            } else {
                 this.seek(0);
                 this.play();
             }
@@ -514,8 +502,7 @@ class DPlayer {
         index = typeof index === 'string' ? parseInt(index) : index;
         if (this.qualityIndex === index || this.switchingQuality) {
             return;
-        }
-        else {
+        } else {
             this.qualityIndex = index;
         }
         this.switchingQuality = true;
@@ -524,6 +511,7 @@ class DPlayer {
 
         const paused = this.video.paused;
         this.video.pause();
+        // this.events.trigger('destroy');
         const videoHTML = tplVideo({
             current: false,
             pic: null,
@@ -537,7 +525,9 @@ class DPlayer {
         this.prevVideo = this.video;
         this.video = videoEle;
         this.initVideo(this.video, this.quality.type || this.options.video.type);
-        this.seek(this.prevVideo.currentTime);
+        if (!this.options.live) {
+            this.seek(this.prevVideo.currentTime);
+        }
         this.notice(`${this.tran('Switching to')} ${this.quality.name} ${this.tran('quality')}`, -1);
         this.events.trigger('quality_start', this.quality);
 
