@@ -352,6 +352,7 @@ class DPlayer {
             case 'flv':
                 if (flvjs) {
                     if (flvjs.isSupported()) {
+                        const src = video.src;
                         if (this.flvPlayer) {
                             this.flvPlayer.unload();
                             this.flvPlayer.detachMediaElement();
@@ -359,7 +360,7 @@ class DPlayer {
                         }
                         this.flvPlayer = flvjs.createPlayer({
                             type: 'flv',
-                            url: video.src,
+                            url: src,
                             isLive: this.options.live,
                         });
                         this.flvPlayer.attachMediaElement(video);
